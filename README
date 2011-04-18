@@ -1,1 +1,1 @@
-Game Server Plugin
+CakePHP plugin for retrieving information from game voice servers (Teamspeak, Teamspeak 3 and Ventrilo), with caching.

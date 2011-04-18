@@ -1,6 +1,6 @@
 <?php
 /**
- * Behavior for connecting to voice servers (Teamspeak, Teamspeak 3 and Ventrilo) and parsing the data.
+ * Plugin for connecting to voice servers (Teamspeak, Teamspeak 3 and Ventrilo) and parsing the data.
  *
  * PHP versions 4 and 5
  *
