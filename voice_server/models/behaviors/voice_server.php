@@ -94,6 +94,17 @@ class VoiceServerBehavior extends ModelBehavior {
 		return true;
 	}
 	
+/**
+ * Ventrilo Query
+ *
+ * Queries a server using the Ventrilo protocol and returns a either an error
+ * or the server data.
+ *
+ * @param AppModel $Model Model instance
+ * @param array $server Server to be queried
+ * @return array returns a either an error or the server data
+ * @access private
+ */
 	private function ventrilo(&$model, $server) {
 		try {
 			App::import('Vendor', 'Voice.Ventrilo', array('file' => 'ventrilo'.DS.'ventrilostatus.php'));
@@ -153,6 +164,17 @@ class VoiceServerBehavior extends ModelBehavior {
 		}
 	}
 
+/**
+ * Teamspeak Query
+ *
+ * Queries a server using the Teamspeak 2 protocol and returns a either an error
+ * or the server data.
+ *
+ * @param AppModel $Model Model instance
+ * @param array $server Server to be queried
+ * @return array returns a either an error or the server data
+ * @access private
+ */
 	private function teamspeak(&$model, $server) {
 		try {
 			App::import('Vendor', 'Voice.TeamSpeak', array('file' => 'teamspeak'.DS.'teamspeakdisplay.php'));
@@ -208,9 +230,18 @@ class VoiceServerBehavior extends ModelBehavior {
 			return $error;
 		}
 	}
-	
-	
-	//teamspeak 3 server query function
+
+/**
+ * Teamspeak 3 Query
+ *
+ * Queries a server using the Teamspeak 3 protocol and returns a either an error
+ * or the server data.
+ *
+ * @param AppModel $Model Model instance
+ * @param array $server Server to be queried
+ * @return array returns a either an error or the server data
+ * @access private
+ */
 	private function teamspeak3(&$model, $server) {
 		try {
 			App::import('Vendor', 'Voice.TeamSpeak3', array('file' => 'teamspeak3'.DS.'TeamSpeak3.php'));
@@ -257,6 +288,12 @@ class VoiceServerBehavior extends ModelBehavior {
 		}
 	}
 	
+/**
+ * Returns an array of Protocols
+ *
+ * @return array protocols database name and friendly name
+ * @access private
+ */
 	function protocols() {
 		$protocols = array(
 			'teamspeak' => 'TeamSpeak',
@@ -267,6 +304,15 @@ class VoiceServerBehavior extends ModelBehavior {
 		return $protocols;
 	}
 	
+/**
+ * Saves live data as to the database serialized and sets a cache time.
+ *
+ * @param AppModel $Model Model instance
+ * @param array $result Server to be saved as cache
+ * @param array $live_data Live data to be saved against server
+ * @return boolean true if query success, false otherwise
+ * @access private
+ */
 	private function saveCache($model, $result, $live_data) {
 		$cache = base64_encode(serialize($live_data));
 
@@ -276,6 +322,16 @@ class VoiceServerBehavior extends ModelBehavior {
 		return $model->query($query);
 	}
 	
+/**
+ * Saves live data as to the database serialized and sets a cache time.
+ *
+ * @param array $list list to be converted to tree
+ * @param string $idField name of ID field
+ * @param string $idField name of parent ID field
+ * @param string $idField name of child ID field
+ * @return array $tree containing tree of channels and users
+ * @access private
+ */
 	private function convertToTree(array $list, $idField = 'id', $parentIdField = 'pid', $childNodesField = 'childNodes') {
 		$lookup = array();
 		
