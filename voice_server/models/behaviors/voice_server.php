@@ -1,19 +1,63 @@
 <?php
+/**
+ * Behavior for connecting to voice servers (Teamspeak, Teamspeak 3 and Ventrilo) and parsing the data.
+ *
+ * PHP versions 4 and 5
+ *
+ * Voice Server Plugin (http://www.boku.co.uk)
+ * Copyright 2011-2011, Boku LLP. (http://www.boku.co.uk)
+ *
+ * Licensed under The MIT License
+ * Redistributions of files must retain the above copyright notice.
+ *
+ * @copyright     Copyright 2011-2011, Boku LLP. (http://www.boku.co.uk)
+ * @link          http://www.boku.co.uk Voice Server Plugin
+ * @license       MIT License (http://www.opensource.org/licenses/mit-license.php)
+ */
+
 App::import('Sanitize');
 
+/**
+ * Behavior for connecting to voice servers (Teamspeak, Teamspeak 3 and Ventrilo) and parsing the data.
+ */
 class VoiceServerBehavior extends ModelBehavior {
 	
-    function setup(&$model, $settings = array()) {		
-        $default = array('cache_time' => 0);
-        
-        if (!isset($this->settings[$model->name])) {
-            $this->settings[$model->name] = $default;
-        }
-        
+/**
+ * Initiate behavior for the model using specified settings.
+ *
+ * Available settings:
+ *
+ * - cache_time: (integer) set the amount of time in seconds
+ *   to retain a cache before retreiving live data from the 
+ *   relevant server.
+ *
+ * @param object $Model Model using the behavior
+ * @param array $settings Settings to override for model.
+ * @access public
+ */
+	function setup(&$model, $settings = array()) {		
+		$default = array('cache_time' => 0);
+		
+		if (!isset($this->settings[$model->name])) {
+			$this->settings[$model->name] = $default;
+		}
+		
 		$this->settings[$model->name] = array_merge($this->settings[$model->name], ife(is_array($settings), $settings, array()));
-    } 
+	} 
 	
-	function afterFind ($model, $results, $primary) {
+/**
+ * After find method. Called after all find commands
+ *
+ * Checks whether cache is still valid and decodes and returns in results 
+ * under a sub array named 'Data'. Otherwise calls the appropriate function
+ * to retrieve the live server information.
+ *
+ * @param object $Model Model on which we are resetting
+ * @param array $results Results of the find operation
+ * @param bool $primary true if this is the primary model that issued the find operation, false otherwise
+ * @access public
+ */	
+	function afterFind (&$model, $results, $primary) {
 		foreach($results as $index => $result) {
 			if(!empty($result[$model->name]['id'])) {
 				$using_cache = false;
@@ -26,9 +70,7 @@ class VoiceServerBehavior extends ModelBehavior {
 				
 				if(!$using_cache) {
 					$live_data = $this->{$result[$model->name]['protocol']}($model, $result);
-					
 					$this->saveCache($model, $result, $live_data);
-
 					$results[$index][$model->name]['Data'] = $live_data;
 				}
 			}
@@ -37,11 +79,22 @@ class VoiceServerBehavior extends ModelBehavior {
 		return $results;
 	}
 	
-	function beforeSave($model) {
+/**
+ * Before save method. Called before all saves
+ *
+ * Clears the cache field. To force an update of the cache when editing.
+ *
+ * @param AppModel $Model Model instance
+ * @return boolean true to continue, false to abort the save
+ * @access public
+ */
+	function beforeSave(&$model) {
 		$model->data[$model->name]['cache'] = "";
+		
+		return true;
 	}
 	
-	function ventrilo($model, $server) {
+	private function ventrilo(&$model, $server) {
 		try {
 			App::import('Vendor', 'Voice.Ventrilo', array('file' => 'ventrilo'.DS.'ventrilostatus.php'));
 
@@ -100,7 +153,7 @@ class VoiceServerBehavior extends ModelBehavior {
 		}
 	}
 
-	function teamspeak($model,$server) {
+	private function teamspeak(&$model, $server) {
 		try {
 			App::import('Vendor', 'Voice.TeamSpeak', array('file' => 'teamspeak'.DS.'teamspeakdisplay.php'));
 			
@@ -158,7 +211,7 @@ class VoiceServerBehavior extends ModelBehavior {
 	
 	
 	//teamspeak 3 server query function
-	function teamspeak3($model, $server) {
+	private function teamspeak3(&$model, $server) {
 		try {
 			App::import('Vendor', 'Voice.TeamSpeak3', array('file' => 'teamspeak3'.DS.'TeamSpeak3.php'));
 		
