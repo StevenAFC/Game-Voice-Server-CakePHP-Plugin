@@ -150,7 +150,7 @@ class VoiceServerBehavior extends ModelBehavior {
 			
 		} catch(Exception $error) {
 		
-			$error = array('error' => 'Unabled to connect');
+			$error = array('error' => 'Unable to connect');
 			$error['protocol'] = 'Ventrilo';
 			$error['status'] = 0;
 			
@@ -218,7 +218,7 @@ class VoiceServerBehavior extends ModelBehavior {
 			return $consolidated;
 			
 		} catch(Exception $error) {
-			$error = array('error' => 'Unabled to connect');
+			$error = array('error' => 'Unable to connect');
 			$error['protocol'] = "Teamspeak 3";
 			$error['status'] = 0;
 			return $error;
@@ -275,7 +275,7 @@ class VoiceServerBehavior extends ModelBehavior {
 			if($error->getCode() == 3329) {
 				$error = array('error' => 'Temporarily banned from server retry later');
 			} else {
-				$error = array('error' => 'Unabled to connect ('.$error->getCode().')');
+				$error = array('error' => 'Unable to connect ('.$error->getCode().')');
 			}
 			$error['protocol'] = "Teamspeak 3";
 			return $error;
