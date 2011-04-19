@@ -60,15 +60,11 @@ class VoiceServerBehavior extends ModelBehavior {
 	function afterFind (&$model, $results, $primary) {
 		foreach($results as $index => $result) {
 			if(!empty($result[$model->name]['id'])) {
-				$using_cache = false;
-				if(!empty($result[$model->name]['cache'])) {
-					if(time() < (strtotime($result[$model->name]['cache_time']) + $this->settings[$model->name]['cache_time'])) {
+				if(!empty($result[$model->name]['cache']) && time() < (strtotime($result[$model->name]['cache_time']) + $this->settings[$model->name]['cache_time'])) {
+					//if(time() < (strtotime($result[$model->name]['cache_time']) + $this->settings[$model->name]['cache_time'])) {
 						$results[$index][$model->name]['Data'] = unserialize(base64_decode($result[$model->name]['cache']));
-						$using_cache = true;
-					}
-				}
-				
-				if(!$using_cache) {
+					//}
+				} else {
 					$live_data = $this->{$result[$model->name]['protocol']}($model, $result);
 					$this->saveCache($model, $result, $live_data);
 					$results[$index][$model->name]['Data'] = $live_data;
