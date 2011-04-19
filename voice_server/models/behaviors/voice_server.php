@@ -61,9 +61,7 @@ class VoiceServerBehavior extends ModelBehavior {
 		foreach($results as $index => $result) {
 			if(!empty($result[$model->name]['id'])) {
 				if(!empty($result[$model->name]['cache']) && time() < (strtotime($result[$model->name]['cache_time']) + $this->settings[$model->name]['cache_time'])) {
-					//if(time() < (strtotime($result[$model->name]['cache_time']) + $this->settings[$model->name]['cache_time'])) {
-						$results[$index][$model->name]['Data'] = unserialize(base64_decode($result[$model->name]['cache']));
-					//}
+					$results[$index][$model->name]['Data'] = unserialize(base64_decode($result[$model->name]['cache']));
 				} else {
 					$live_data = $this->{$result[$model->name]['protocol']}($model, $result);
 					$this->saveCache($model, $result, $live_data);
